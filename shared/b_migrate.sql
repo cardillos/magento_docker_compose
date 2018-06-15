@@ -1,0 +1,1 @@
+UPDATE core_config_data SET value = 'http://local.magento' WHERE path IN ('web/secure/base_url', 'web/unsecure/base_url')

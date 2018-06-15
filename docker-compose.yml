@@ -1,0 +1,48 @@
+version: '3.0'
+services:
+# Mysql Container
+  db:  
+    image: mysql:5.7
+    ports: 
+      - "3306:3306"
+    volumes:
+      # Persistent data
+      - ./shared/db-data:/var/lib/mysql
+      # Rename sql file below with actual database
+      - ./shared/b_magento_nzm_dump.sql:/docker-entrypoint-initdb.d/a_database.sql
+      # Update core_config_data database table
+      - ./shared/c_migrate.sql:/docker-entrypoint-initdb.d/c_migrate.sql
+    env_file: env
+    working_dir: /var/lib/mysql
+    container_name: "m_db"
+
+# Magento Container
+  web:  
+    image: cardillos/magento2_php703
+    ports: 
+      - "80:80"
+    links:  
+      - db
+    restart: always
+    volumes:    
+      - ./shared/httpdocs:/var/www/site/httpdocs
+    #  - ./shared/magento_change_local.sh:/usr/local/bin/magento_change_local.sh
+    expose: 
+      - 3000
+    env_file: env
+    working_dir: /var/www/site/httpdocs
+    container_name: "m_web"
+
+# MySQL administration.
+  phpmyadmin: 
+    image: phpmyadmin/phpmyadmin
+    ports: 
+      - "8580:80"
+    links: 
+      - db     
+    env_file: env
+    container_name: "m_pma"
+
+# Volume name          
+volumes:
+  db-data_test: 
