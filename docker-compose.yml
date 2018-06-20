@@ -1,22 +1,22 @@
 version: '3.0'
 services:
-# Mysql Container
+# Mysql Container.
   db:  
     image: mysql:5.7
     ports: 
       - "3306:3306"
     volumes:
-      # Persistent data
+      # Persistent data.
       - ./shared/db-data:/var/lib/mysql
       # Magento project database (ex. NZMuscle)
       - ./shared/base_backup.sql:/docker-entrypoint-initdb.d/a_database.sql
-      # Update core_config_data database table
+      # Updates core_config_data database table.
       - ./shared/b_migrate.sql:/docker-entrypoint-initdb.d/b_migrate.sql
     env_file: env
     working_dir: /var/lib/mysql
     container_name: "db"
 
-# Magento Container
+# Magento Container.
   web:  
     image: cardillos/magento2_php703
     ports: 
@@ -28,8 +28,11 @@ services:
       - 3000
     env_file: env
     volumes:      
-      - ./shared/httpdocs_nzm/var/log:/var/www/html/var/log
-      - ./shared/httpdocs_nzm/app:/var/www/html/app
+      # Add here the directories that are customed from live site (eg. app, pub).
+      - ./shared/httpdocs/app:/var/www/html/app
+      # Mounted log folder to view logs from host.
+      - ./shared/httpdocs/var/log:/var/www/html/var/log
+      
     working_dir: /var/www/html
     container_name: "web"
 
@@ -43,6 +46,6 @@ services:
     env_file: env
     container_name: "pma"
 
-# Volume name          
+# Volume name.          
 volumes:
   db-data_test: 
