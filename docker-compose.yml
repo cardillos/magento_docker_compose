@@ -8,13 +8,13 @@ services:
     volumes:
       # Persistent data
       - ./shared/db-data:/var/lib/mysql
-      # Rename sql file below with actual database
-      - ./shared/b_magento_nzm_dump.sql:/docker-entrypoint-initdb.d/a_database.sql
+      # Magento project database (ex. NZMuscle)
+      - ./shared/base_backup.sql:/docker-entrypoint-initdb.d/a_database.sql
       # Update core_config_data database table
-      - ./shared/c_migrate.sql:/docker-entrypoint-initdb.d/c_migrate.sql
+      - ./shared/b_migrate.sql:/docker-entrypoint-initdb.d/b_migrate.sql
     env_file: env
     working_dir: /var/lib/mysql
-    container_name: "m_db"
+    container_name: "db"
 
 # Magento Container
   web:  
@@ -24,14 +24,14 @@ services:
     links:  
       - db
     restart: always
-    volumes:    
-      - ./shared/httpdocs:/var/www/site/httpdocs
-    #  - ./shared/magento_change_local.sh:/usr/local/bin/magento_change_local.sh
     expose: 
       - 3000
     env_file: env
-    working_dir: /var/www/site/httpdocs
-    container_name: "m_web"
+    volumes:      
+      - ./shared/httpdocs_nzm/var/log:/var/www/html/var/log
+      - ./shared/httpdocs_nzm/app:/var/www/html/app
+    working_dir: /var/www/html
+    container_name: "web"
 
 # MySQL administration.
   phpmyadmin: 
@@ -41,7 +41,7 @@ services:
     links: 
       - db     
     env_file: env
-    container_name: "m_pma"
+    container_name: "pma"
 
 # Volume name          
 volumes:
