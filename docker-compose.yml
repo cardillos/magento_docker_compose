@@ -43,7 +43,6 @@ services:
       - "8580:80"
     links: 
       - db     
-    env_file: env
     container_name: "pma"
 
 # Volume name.          
